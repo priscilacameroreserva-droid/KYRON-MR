@@ -71,10 +71,16 @@ body{min-height:100svh;overflow-x:hidden}.shell{min-height:100svh;display:flex;a
  </section>
 
  <section id="vr" class="screen">
-  <h2>KYRON VR</h2><p class="sub">A câmera do celular pode ser exibida aqui com uma interface sobreposta. Isso não é passthrough óptico; é a imagem da câmera do aparelho.</p>
-  <div class="camera-wrap"><video id="camera" autoplay playsinline muted></video><div class="camera-hud">KYRON MR</div></div>
+  <h2>KYRON VR</h2><p class="sub">Visualização estilo Google Cardboard: duas janelas separadas, uma para cada olho.</p>
+  <div class="vr-stage"><div class="eye"><video id="cameraLeft" autoplay playsinline muted></video><div class="eye-label">LEFT EYE</div></div><div class="eye"><video id="cameraRight" autoplay playsinline muted></video><div class="eye-label">RIGHT EYE</div></div></div>
   <div class="actions"><button class="action-btn" data-action="home">SAIR / VOLTAR</button></div>
   <p class="notice" id="camera-note">A câmera só inicia depois da sua autorização.</p>
+ </section>
+ <section id="hands" class="screen">
+  <h2>HAND TRACKING LAB</h2><p class="sub">Rastreamento da mão com contorno azul luminoso, sem desenho de esqueleto.</p>
+  <div class="hand-stage"><video id="handVideo" autoplay playsinline muted></video><canvas id="handCanvas"></canvas></div>
+  <div class="panel"><div class="state"><i class="pulse"></i><span id="handStatus">Preparando rastreamento...</span></div><p class="small">A detecção usa a câmera e o modelo MediaPipe Hands carregado no navegador. Boa iluminação melhora o resultado.</p></div>
+  <div class="actions"><button class="action-btn" data-action="home">VOLTAR AO MENU</button></div>
  </section>
 </main></div>
 <script>
