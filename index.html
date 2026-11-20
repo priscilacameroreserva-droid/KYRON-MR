@@ -1,1 +1,111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070d16">
+<title>KYRON MR</title>
+<style>
+:root{color-scheme:dark;--bg:#070d16;--panel:#0d1827;--cyan:#38d9ff;--blue:#168cff;--muted:#8ba5bd;--white:#eef8ff}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:radial-gradient(ellipse at 50% 38%,#10263b 0%,#091421 42%,#050a11 100%);color:var(--white)}
+body{min-height:100svh;overflow-x:hidden}.shell{min-height:100svh;display:flex;align-items:center;justify-content:center;padding:24px}
+.frame{width:min(760px,100%);min-height:560px;border:1px solid #1b4961;border-radius:24px;background:linear-gradient(145deg,rgba(13,29,46,.96),rgba(5,12,22,.97));box-shadow:0 0 55px #008dcc20,inset 0 0 35px #008dcc0a;padding:clamp(22px,5vw,48px);position:relative;overflow:hidden}
+.frame:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 49.8%,#38d9ff08 50%,transparent 50.2%);pointer-events:none}
+.topline{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#39e6a1;box-shadow:0 0 12px #39e6a1;margin-right:8px}
+.brand{text-align:center;margin:42px 0 34px}.brand-mark{font-size:clamp(42px,9vw,68px);font-weight:900;letter-spacing:.16em;margin-left:.16em;background:linear-gradient(90deg,#e9fbff,#42d9ff 55%,#168cff);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 32px #1cbfff25}
+.tag{font-size:11px;letter-spacing:.34em;color:#8fb5ce;margin-top:8px}.eyebrow{text-align:center;color:var(--muted);font-size:12px;letter-spacing:.2em;margin-bottom:22px}
+.menu{width:min(390px,100%);margin:0 auto;display:grid;gap:12px}.menu-btn,.action-btn{width:100%;border:1px solid #23516b;background:linear-gradient(100deg,#10283d,#0b1b2c);color:var(--white);padding:17px 20px;border-radius:12px;text-align:left;font-size:14px;font-weight:750;letter-spacing:.12em;cursor:pointer;transition:.18s;touch-action:manipulation}
+.menu-btn:hover,.menu-btn:focus-visible,.action-btn:hover,.action-btn:focus-visible,.menu-btn.selected{outline:none;border-color:var(--cyan);background:linear-gradient(100deg,#123b56,#10263c);box-shadow:0 0 22px #16bfff30;transform:translateY(-1px)}
+.menu-btn span{float:right;color:var(--cyan);font-size:18px}.footer{display:flex;justify-content:center;gap:24px;flex-wrap:wrap;color:#66869e;font-size:10px;letter-spacing:.13em;margin-top:34px}
+.screen{display:none;position:relative;z-index:1}.screen.active{display:block}.screen h2{text-align:center;font-size:22px;letter-spacing:.16em;margin:44px 0 10px}.sub{text-align:center;color:var(--muted);font-size:13px;line-height:1.6;margin:0 auto 26px;max-width:480px}
+.panel{border:1px solid #1e4962;background:#081522b8;border-radius:14px;padding:18px;margin:14px auto;max-width:520px}
+.state{display:flex;align-items:center;gap:10px;color:#b9d7e8;font-size:13px}.pulse{width:9px;height:9px;border-radius:50%;background:var(--cyan);box-shadow:0 0 15px var(--cyan);animation:pulse 1.4s infinite}@keyframes pulse{50%{opacity:.3}}
+.controller-name{font-weight:800;color:var(--cyan);margin-bottom:8px}.small{font-size:12px;color:var(--muted);line-height:1.6}
+.test-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:14px}.test-key{border:1px solid #23475c;border-radius:9px;padding:11px;color:#9db9cb;font-size:12px}.test-key.done{border-color:#36dfa4;color:#7cf0c0;background:#0b2b27}.test-key b{display:block;color:#effaff;font-size:14px;margin-bottom:4px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:22px}.action-btn{width:auto;text-align:center;padding:13px 18px;font-size:12px}.action-btn.primary{border-color:#1b9bc8;background:linear-gradient(100deg,#0878a7,#1354a0)}
+.option-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:13px 0;border-bottom:1px solid #183448;color:#c9e0ed;font-size:13px}.option-row:last-child{border:0}.toggle{accent-color:#20c9f4;width:20px;height:20px}
+.camera-wrap{position:relative;min-height:250px;border:1px solid #22516b;border-radius:14px;overflow:hidden;background:#02070c}.camera-wrap video{width:100%;height:100%;min-height:250px;object-fit:cover;display:block}.camera-hud{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;text-align:center;text-shadow:0 2px 12px #000;font-weight:800;letter-spacing:.2em;color:#a8f0ff}
+.notice{color:#91aabd;font-size:11px;text-align:center;line-height:1.6;margin-top:16px}
+@media(max-width:520px){.shell{padding:12px}.frame{min-height:calc(100svh - 24px);padding:22px 18px;border-radius:18px}.brand{margin:36px 0 30px}.screen h2{margin-top:34px}.footer{gap:13px}}
+</style>
+</head>
+<body>
+<div class="shell"><main class="frame">
+ <div class="topline"><span>KYRON SYSTEMS</span><span><i class="status-dot"></i>ONLINE</span></div>
+ <section id="home" class="screen active">
+  <header class="brand"><div class="brand-mark">KYRON</div><div class="tag">MIXED REALITY</div></header>
+  <div class="eyebrow">WELCOME · SELECT YOUR EXPERIENCE</div>
+  <nav class="menu" aria-label="Menu principal">
+   <button class="menu-btn selected" data-action="start">START VR <span>↗</span></button>
+   <button class="menu-btn" data-action="controllers">CONTROLLERS <span>⌘</span></button>
+   <button class="menu-btn" data-action="center">CENTER MENU <span>◎</span></button>
+   <button class="menu-btn" data-action="options">VR OPTIONS <span>⚙</span></button>
+  </nav>
+  <div class="footer"><span>R1 / L1 / X · SELECT</span><span>○ / B / L2 · BACK</span><span>LEFT STICK · NAVIGATE</span></div>
+ </section>
 
+ <section id="controllers" class="screen">
+  <h2>CONTROLLERS</h2><p class="sub">Verificando controles disponíveis no navegador. Ligue e conecte seu controle; se necessário, aperte qualquer botão para ele ser reconhecido.</p>
+  <div class="panel"><div class="state"><i class="pulse"></i><span id="scan-status">Procurando controles conectados...</span></div><div id="pad-info" class="small" style="margin-top:12px">PS4, Xbox, Joy-Con e controles compatíveis podem aparecer conforme o suporte do navegador e do dispositivo.</div></div>
+  <div class="panel"><div class="controller-name">TESTE DE BOTÕES</div><div class="small">Aperte os comandos abaixo no controle. Os indicadores acendem quando o navegador detectar o botão.</div><div class="test-grid">
+   <div class="test-key" data-test="r1"><b>R1 / RB</b>Confirmar</div><div class="test-key" data-test="r2"><b>R2 / RT</b>Sair</div>
+   <div class="test-key" data-test="l1"><b>L1 / LB</b>Confirmar</div><div class="test-key" data-test="l2"><b>L2 / LT</b>Voltar / sair</div>
+   <div class="test-key" data-test="x"><b>X / A</b>Ação</div><div class="test-key" data-test="b"><b>○ / B</b>Voltar</div>
+   <div class="test-key" data-test="stick"><b>ANALÓGICO ESQUERDO</b>Navegar</div><div class="test-key" data-test="connected"><b>CONTROLE</b>Conectado</div>
+  </div></div>
+  <div class="actions"><button class="action-btn" data-action="home">VOLTAR AO MENU</button></div>
+  <p class="notice">Nota: o navegador detecta gamepads conectados pela Gamepad API. Ele não consegue procurar todos os aparelhos Bluetooth como a tela de configurações do celular.</p>
+ </section>
+
+ <section id="options" class="screen">
+  <h2>VR OPTIONS</h2><p class="sub">Ajustes iniciais do KYRON MR.</p>
+  <div class="panel">
+   <label class="option-row"><span>Modo de tela única</span><input class="toggle" type="radio" name="viewmode" value="single" checked></label>
+   <label class="option-row"><span>Modo lente dupla (VR Box)</span><input class="toggle" type="radio" name="viewmode" value="dual"></label>
+   <label class="option-row"><span>Ativar giroscópio quando disponível</span><input id="gyro" class="toggle" type="checkbox" checked></label>
+   <div class="small" id="mode-note">Modo inicial: tela única. O modo lente dupla será aplicado à experiência VR quando ela for implementada.</div>
+  </div>
+  <div class="actions"><button class="action-btn" data-action="home">VOLTAR AO MENU</button></div>
+ </section>
+
+ <section id="vr" class="screen">
+  <h2>KYRON VR</h2><p class="sub">A câmera do celular pode ser exibida aqui com uma interface sobreposta. Isso não é passthrough óptico; é a imagem da câmera do aparelho.</p>
+  <div class="camera-wrap"><video id="camera" autoplay playsinline muted></video><div class="camera-hud">KYRON MR</div></div>
+  <div class="actions"><button class="action-btn" data-action="home">SAIR / VOLTAR</button></div>
+  <p class="notice" id="camera-note">A câmera só inicia depois da sua autorização.</p>
+ </section>
+</main></div>
+<script>
+(()=>{
+ const screens=[...document.querySelectorAll('.screen')], menuButtons=[...document.querySelectorAll('#home .menu-btn')];
+ let current='home',selected=0,gamepadIndex=null,lastButtons=[],lastAxis=0,stream=null;
+ const $=id=>document.getElementById(id);
+ function show(id){screens.forEach(s=>s.classList.toggle('active',s.id===id));current=id;if(id==='home')focusMenu(selected)}
+ function focusMenu(i){selected=(i+menuButtons.length)%menuButtons.length;menuButtons.forEach((b,n)=>b.classList.toggle('selected',n===selected))}
+ function back(){if(current!=='home'){if(current==='vr')stopCamera();show('home')}}
+ async function startVR(){show('vr');try{if(!navigator.mediaDevices?.getUserMedia)throw new Error('Câmera não disponível neste navegador.');stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});$('camera').srcObject=stream;$('camera-note').textContent='Câmera ativa. Para sair, use o botão abaixo ou o comando de voltar do controle.'}catch(e){$('camera-note').textContent='Não foi possível abrir a câmera: '+e.message+' Verifique a permissão e use HTTPS.'}}
+ function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$('camera').srcObject=null}
+ function activate(action){if(action==='start')startVR();if(action==='controllers')show('controllers');if(action==='options')show('options');if(action==='home')back();if(action==='center'){focusMenu(0);document.querySelector('.frame').scrollIntoView({behavior:'smooth',block:'center'});}}
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(b)activate(b.dataset.action)});
+ function connectedPad(){const pads=navigator.getGamepads?.()||[];for(let i=0;i<pads.length;i++)if(pads[i])return pads[i];return null}
+ function updatePad(){const pad=connectedPad();if(pad){gamepadIndex=pad.index;$('scan-status').textContent='Controle conectado: '+(pad.id||'Gamepad')+' (índice '+pad.index+')';$('pad-info').textContent='Dispositivo detectado. Tipo e nomes dos botões podem variar entre PS4, Xbox, Joy-Con e controles genéricos.';$('scan-status').style.color='#7cf0c0';document.querySelector('[data-test="connected"]').classList.add('done')}else{$('scan-status').textContent='Nenhum controle detectado. Conecte e aperte um botão.';$('scan-status').style.color='';document.querySelector('[data-test="connected"]').classList.remove('done')}}
+ window.addEventListener('gamepadconnected',e=>{gamepadIndex=e.gamepad.index;updatePad()});window.addEventListener('gamepaddisconnected',()=>{gamepadIndex=null;updatePad()});
+ const mark=k=>{const el=document.querySelector('[data-test="'+k+'"]');if(el)el.classList.add('done')};
+ function loop(){const pads=navigator.getGamepads?.()||[];const p=(gamepadIndex!==null&&pads[gamepadIndex])||connectedPad();if(p){gamepadIndex=p.index;
+  const pressed=i=>!!p.buttons[i]?.pressed;const edge=i=>pressed(i)&&!lastButtons[i];
+  // Standard Gamepad mapping: shoulders 4/5, triggers 6/7, face buttons 0/1.
+  if(pressed(5)){mark('r1')}if(pressed(7)){mark('r2')}if(pressed(4)){mark('l1')}if(pressed(6)){mark('l2')}if(pressed(0)){mark('x')}if(pressed(1)){mark('b')}
+  if(p.axes?.length>=2&&(Math.abs(p.axes[0])>.55||Math.abs(p.axes[1])>.55)){mark('stick');const now=Date.now();if(now-lastAxis>260){if(current==='home'){if(p.axes[1]>.55)focusMenu(selected+1);if(p.axes[1]<-.55)focusMenu(selected-1)}lastAxis=now}}
+  if(edge(5)||edge(4)||edge(0)){if(current==='home')activate(menuButtons[selected].dataset.action)}
+  if(edge(1)||edge(6)){back()}
+  if(edge(7)){back()}
+  lastButtons=p.buttons.map(b=>!!b.pressed);
+ }requestAnimationFrame(loop)}
+ menuButtons.forEach((b,i)=>{b.addEventListener('focus',()=>focusMenu(i));b.addEventListener('mouseenter',()=>focusMenu(i))});
+ document.querySelectorAll('input[name="viewmode"]').forEach(r=>r.addEventListener('change',()=>{$('mode-note').textContent=r.value==='dual'?'Modo lente dupla selecionado. A renderização lado a lado será aplicada na etapa de experiência VR.':'Modo inicial: tela única.'}));
+ if(!('getGamepads'in navigator)){$('scan-status').textContent='Este navegador não oferece suporte à Gamepad API.'}
+ updatePad();requestAnimationFrame(loop);
+})();
+</script>
+</body></html>
