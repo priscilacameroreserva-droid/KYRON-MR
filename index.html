@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#070d16">
 <title>KYRON MR</title>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
 <style>
 :root{color-scheme:dark;--bg:#070d16;--panel:#0d1827;--cyan:#38d9ff;--blue:#168cff;--muted:#8ba5bd;--white:#eef8ff}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:radial-gradient(ellipse at 50% 38%,#10263b 0%,#091421 42%,#050a11 100%);color:var(--white)}
@@ -26,19 +27,19 @@ body{min-height:100svh;overflow-x:hidden}.shell{min-height:100svh;display:flex;a
 .actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:22px}.action-btn{width:auto;text-align:center;padding:13px 18px;font-size:12px}.action-btn.primary{border-color:#1b9bc8;background:linear-gradient(100deg,#0878a7,#1354a0)}
 .option-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:13px 0;border-bottom:1px solid #183448;color:#c9e0ed;font-size:13px}.option-row:last-child{border:0}.toggle{accent-color:#20c9f4;width:20px;height:20px}
 .camera-wrap{position:relative;min-height:250px;border:1px solid #22516b;border-radius:14px;overflow:hidden;background:#02070c}.camera-wrap video{width:100%;height:100%;min-height:250px;object-fit:cover;display:block}.camera-hud{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;text-align:center;text-shadow:0 2px 12px #000;font-weight:800;letter-spacing:.2em;color:#a8f0ff}
-.notice{color:#91aabd;font-size:11px;text-align:center;line-height:1.6;margin-top:16px}
+.fullscreen-btn{position:fixed;z-index:1000;top:12px;right:12px;border:1px solid #38d9ff;background:#071522eF;color:#dff9ff;border-radius:10px;padding:12px 15px;font-weight:800;letter-spacing:.08em;box-shadow:0 0 18px #168cff55;cursor:pointer}.vr-stage{display:flex;gap:2%;align-items:center;justify-content:center;width:100%;min-height:55vh;padding:10px;background:#02070c}.eye{width:49%;aspect-ratio:1/1;max-height:70vh;border:2px solid #1b9bc8;border-radius:50%;overflow:hidden;position:relative;background:#02070c;box-shadow:0 0 20px #168cff30}.eye video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}.eye-label{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-size:10px;color:#9cecff;letter-spacing:.2em;text-shadow:0 1px 8px #000}.hand-stage{position:relative;width:100%;max-width:640px;margin:auto;border-radius:14px;overflow:hidden;background:#02070c}.hand-stage video{width:100%;display:block;transform:scaleX(-1)}.hand-stage canvas{position:absolute;inset:0;width:100%;height:100%;transform:scaleX(-1)}.notice{color:#91aabd;font-size:11px;text-align:center;line-height:1.6;margin-top:16px}
 @media(max-width:520px){.shell{padding:12px}.frame{min-height:calc(100svh - 24px);padding:22px 18px;border-radius:18px}.brand{margin:36px 0 30px}.screen h2{margin-top:34px}.footer{gap:13px}}
 </style>
 </head>
 <body>
-<div class="shell"><main class="frame">
+<button id="fullscreenBtn" class="fullscreen-btn" type="button">⛶ ATIVAR TELA CHEIA</button>\n<div class="shell"><main class="frame">
  <div class="topline"><span>KYRON SYSTEMS</span><span><i class="status-dot"></i>ONLINE</span></div>
  <section id="home" class="screen active">
   <header class="brand"><div class="brand-mark">KYRON</div><div class="tag">MIXED REALITY</div></header>
   <div class="eyebrow">WELCOME · SELECT YOUR EXPERIENCE</div>
   <nav class="menu" aria-label="Menu principal">
    <button class="menu-btn selected" data-action="start">START VR <span>↗</span></button>
-   <button class="menu-btn" data-action="controllers">CONTROLLERS <span>⌘</span></button>
+   <button class="menu-btn" data-action="controllers">CONTROLLERS <span>⌘</span></button>\n   <button class="menu-btn" data-action="hands">HAND TRACKING <span>✋</span></button>
    <button class="menu-btn" data-action="center">CENTER MENU <span>◎</span></button>
    <button class="menu-btn" data-action="options">VR OPTIONS <span>⚙</span></button>
   </nav>
@@ -79,14 +80,18 @@ body{min-height:100svh;overflow-x:hidden}.shell{min-height:100svh;display:flex;a
 <script>
 (()=>{
  const screens=[...document.querySelectorAll('.screen')], menuButtons=[...document.querySelectorAll('#home .menu-btn')];
- let current='home',selected=0,gamepadIndex=null,lastButtons=[],lastAxis=0,stream=null;
+ let current='home',selected=0,gamepadIndex=null,lastButtons=[],lastAxis=0,stream=null,handRunner=null,handActive=false;
  const $=id=>document.getElementById(id);
  function show(id){screens.forEach(s=>s.classList.toggle('active',s.id===id));current=id;if(id==='home')focusMenu(selected)}
  function focusMenu(i){selected=(i+menuButtons.length)%menuButtons.length;menuButtons.forEach((b,n)=>b.classList.toggle('selected',n===selected))}
  function back(){if(current!=='home'){if(current==='vr')stopCamera();show('home')}}
- async function startVR(){show('vr');try{if(!navigator.mediaDevices?.getUserMedia)throw new Error('Câmera não disponível neste navegador.');stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});$('camera').srcObject=stream;$('camera-note').textContent='Câmera ativa. Para sair, use o botão abaixo ou o comando de voltar do controle.'}catch(e){$('camera-note').textContent='Não foi possível abrir a câmera: '+e.message+' Verifique a permissão e use HTTPS.'}}
- function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$('camera').srcObject=null}
- function activate(action){if(action==='start')startVR();if(action==='controllers')show('controllers');if(action==='options')show('options');if(action==='home')back();if(action==='center'){focusMenu(0);document.querySelector('.frame').scrollIntoView({behavior:'smooth',block:'center'});}}
+ async function getCamera(){if(!navigator.mediaDevices?.getUserMedia)throw new Error('Câmera não disponível. Use o site em HTTPS.');if(!stream)stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}},audio:false});return stream}
+ async function startVR(){show('vr');try{const s=await getCamera();$('cameraLeft').srcObject=s;$('cameraRight').srcObject=s;$('camera-note').textContent='Câmera ativa em visualização dupla. A imagem é duplicada para os dois olhos; não é um sistema óptico de passthrough.'}catch(e){$('camera-note').textContent='Não foi possível abrir a câmera: '+e.message+' Verifique a permissão e use HTTPS.'}}
+ async function startHands(){show('hands');try{const s=await getCamera();const v=$('handVideo');v.srcObject=s;await v.play();if(!window.Hands)throw new Error('O modelo de rastreamento não carregou. Verifique a conexão com a internet.');const c=$('handCanvas'),ctx=c.getContext('2d');const hands=new Hands({locateFile:f=>'https://cdn.jsdelivr.net/npm/@mediapipe/hands/'+f});hands.setOptions({maxNumHands:2,modelComplexity:1,minDetectionConfidence:.65,minTrackingConfidence:.6});hands.onResults(res=>{c.width=v.videoWidth||640;c.height=v.videoHeight||480;ctx.clearRect(0,0,c.width,c.height);const all=res.multiHandLandmarks||[];if(!all.length){$('handStatus').textContent='Mostre uma ou duas mãos para a câmera.';return} $('handStatus').textContent=all.length+' mão(s) detectada(s)';all.forEach(l=>{const outline=[0,1,2,3,4,5,6,7,8,5,9,10,11,12,13,9,13,14,15,16,17,13,17,18,19,20,0];ctx.beginPath();outline.forEach((id,i)=>{const p=l[id],x=p.x*c.width,y=p.y*c.height;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.closePath();ctx.strokeStyle='#27cfff';ctx.lineWidth=5;ctx.shadowColor='#00aaff';ctx.shadowBlur=18;ctx.stroke();ctx.fillStyle='rgba(20,190,255,.08)';ctx.fill();ctx.shadowBlur=0})});handRunner=hands;handActive=true;const tick=async()=>{if(!handActive||current!=='hands')return;try{await hands.send({image:v})}catch(e){}requestAnimationFrame(tick)};tick()}catch(e){$('handStatus').textContent='Não foi possível iniciar: '+e.message}}
+ function stopHands(){handActive=false;if(handRunner){handRunner.close();handRunner=null}const c=$('handCanvas');if(c)c.getContext('2d').clearRect(0,0,c.width,c.height)}
+
+ function stopCamera(){stopHands();if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}['cameraLeft','cameraRight','handVideo'].forEach(id=>{const v=$(id);if(v)v.srcObject=null})}
+ function activate(action){if(action==='start')startVR();if(action==='controllers')show('controllers');if(action==='hands')startHands();if(action==='options')show('options');if(action==='home')back();if(action==='center'){focusMenu(0);document.querySelector('.frame').scrollIntoView({behavior:'smooth',block:'center'});}}
  document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(b)activate(b.dataset.action)});
  function connectedPad(){const pads=navigator.getGamepads?.()||[];for(let i=0;i<pads.length;i++)if(pads[i])return pads[i];return null}
  function updatePad(){const pad=connectedPad();if(pad){gamepadIndex=pad.index;$('scan-status').textContent='Controle conectado: '+(pad.id||'Gamepad')+' (índice '+pad.index+')';$('pad-info').textContent='Dispositivo detectado. Tipo e nomes dos botões podem variar entre PS4, Xbox, Joy-Con e controles genéricos.';$('scan-status').style.color='#7cf0c0';document.querySelector('[data-test="connected"]').classList.add('done')}else{$('scan-status').textContent='Nenhum controle detectado. Conecte e aperte um botão.';$('scan-status').style.color='';document.querySelector('[data-test="connected"]').classList.remove('done')}}
@@ -105,7 +110,7 @@ body{min-height:100svh;overflow-x:hidden}.shell{min-height:100svh;display:flex;a
  menuButtons.forEach((b,i)=>{b.addEventListener('focus',()=>focusMenu(i));b.addEventListener('mouseenter',()=>focusMenu(i))});
  document.querySelectorAll('input[name="viewmode"]').forEach(r=>r.addEventListener('change',()=>{$('mode-note').textContent=r.value==='dual'?'Modo lente dupla selecionado. A renderização lado a lado será aplicada na etapa de experiência VR.':'Modo inicial: tela única.'}));
  if(!('getGamepads'in navigator)){$('scan-status').textContent='Este navegador não oferece suporte à Gamepad API.'}
- updatePad();requestAnimationFrame(loop);
+ $('fullscreenBtn').addEventListener('click',async()=>{try{if(!document.fullscreenElement){await document.documentElement.requestFullscreen();$('fullscreenBtn').textContent='⛶ SAIR DA TELA CHEIA'}else{await document.exitFullscreen();$('fullscreenBtn').textContent='⛶ ATIVAR TELA CHEIA'}}catch(e){$('fullscreenBtn').textContent='TELA CHEIA INDISPONÍVEL'}});document.addEventListener('fullscreenchange',()=>$('fullscreenBtn').textContent=document.fullscreenElement?'⛶ SAIR DA TELA CHEIA':'⛶ ATIVAR TELA CHEIA');updatePad();requestAnimationFrame(loop);
 })();
 </script>
 </body></html>
